@@ -1,0 +1,23 @@
+name: Mirror FlyBrainLab to GHCR
+on:
+  workflow_dispatch:
+
+jobs:
+  mirror:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Pull and push
+        run: |
+          docker pull --platform linux/amd64 fruitflybrain/fbl:latest
+          docker tag fruitflybrain/fbl:latest ghcr.io/${{ github.repository_owner }}/flybrainlab:latest
+          docker push ghcr.io/${{ github.repository_owner }}/flybrainlab:latest
